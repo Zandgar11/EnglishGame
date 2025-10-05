@@ -1,0 +1,172 @@
+:root {
+  /* Oxford Blue */
+  --oxford_blue: #0a1128;
+  --oxford_blue-100: #020308;
+  --oxford_blue-200: #040710;
+  --oxford_blue-300: #060a18;
+  --oxford_blue-400: #080e21;
+  --oxford_blue-500: #0a1128;
+  --oxford_blue-600: #1d3172;
+  --oxford_blue-700: #2f50bc;
+  --oxford_blue-800: #6c86da;
+  --oxford_blue-900: #b6c2ed;
+
+  /* Penn Blue */
+  --penn_blue: #001f54;
+  --penn_blue-100: #000610;
+  --penn_blue-200: #000c21;
+  --penn_blue-300: #001231;
+  --penn_blue-400: #001841;
+  --penn_blue-500: #001f54;
+  --penn_blue-600: #003da7;
+  --penn_blue-700: #005dfd;
+  --penn_blue-800: #5492ff;
+  --penn_blue-900: #a9c9ff;
+
+  /* Indigo Dye */
+  --indigo_dye: #034078;
+  --indigo_dye-100: #010d18;
+  --indigo_dye-200: #011930;
+  --indigo_dye-300: #022648;
+  --indigo_dye-400: #02335f;
+  --indigo_dye-500: #034078;
+  --indigo_dye-600: #0567c3;
+  --indigo_dye-700: #1c8ef9;
+  --indigo_dye-800: #68b4fb;
+  --indigo_dye-900: #b3d9fd;
+
+  /* Cerulean */
+  --cerulean: #1282a2;
+  --cerulean-100: #041a20;
+  --cerulean-200: #073440;
+  --cerulean-300: #0b4e60;
+  --cerulean-400: #0e6881;
+  --cerulean-500: #1282a2;
+  --cerulean-600: #18b2dc;
+  --cerulean-700: #4cc9eb;
+  --cerulean-800: #88dbf2;
+  --cerulean-900: #c3edf8;
+
+  /* White */
+  --white: #fefcfb;
+  --white-100: #512814;
+  --white-200: #a25128;
+  --white-300: #d68359;
+  --white-400: #eabfaa;
+  --white-500: #fefcfb;
+  --white-600: #fefdfc;
+  --white-700: #fefdfd;
+  --white-800: #fffefd;
+  --white-900: #fffefe;
+}
+
+/* Palette (variables CSS) */
+:root {
+  --oxford_blue: #0a1128;
+  --penn_blue: #001f54;
+  --indigo_dye: #034078;
+  --cerulean: #1282a2;
+  --white: #fefcfb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  background: linear-gradient(135deg, var(--white), #e6f4f7);
+  color: var(--oxford_blue);
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* 🏷️ Titre */
+h1 {
+  color: var(--indigo_dye);
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* 📱 Container central */
+.container {
+  width: 100%;
+  max-width: 480px; /* largeur max pour garder lisible sur grands écrans */
+  background: var(--white);
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* 🔘 Label + Select */
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+select {
+  width: 100%;
+  background: var(--white);
+  color: var(--oxford_blue);
+  border: 2px solid var(--cerulean);
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 1rem;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: 0.2s ease;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--indigo_dye);
+}
+
+/* 🎯 Boutons */
+button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px;
+  font-size: 1rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  background: var(--cerulean);
+  color: var(--white);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  transition: 0.25s ease;
+}
+
+button:hover,
+button:focus {
+  background: var(--indigo_dye);
+  transform: translateY(-2px);
+}
+
+/* 📝 Résultats */
+#resultat, #ClockInfo {
+  margin-top: 16px;
+  font-size: clamp(1.2rem, 4vw, 1.6rem);
+  font-weight: 600;
+  text-align: center;
+  color: var(--penn_blue);
+}
+
+/* 📲 Responsive tweaks (tablette & +) */
+@media (min-width: 600px) {
+  body {
+    padding: 40px;
+  }
+  .container {
+    padding: 30px;
+  }
+}
