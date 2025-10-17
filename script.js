@@ -32,7 +32,7 @@ function GetRandomSong() {
 
     switch (difficulty.toLowerCase()) {
         case "easy":
-            time = 60;
+            time = 3.0;
             break;
 
         case "medium":
@@ -40,7 +40,7 @@ function GetRandomSong() {
             break; 
 
         default:
-            time = 30;
+            time = 60;
             break;
     }
 
