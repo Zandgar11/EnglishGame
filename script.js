@@ -10,7 +10,6 @@ vBtnTimer.addEventListener("click", Timer)
 fetch('convertcsv.json')
   .then(resp => resp.json())
   .then(data => {
-    // data = [["Imagine",1971,"John Lennon","Easy"], ...]
     const keys = ["Titre","Année","Artiste","Difficulté"];
     songs = data.map(row => {
       let obj = {};
@@ -33,12 +32,12 @@ function GetRandomSong() {
 
     switch (difficulty.toLowerCase()) {
         case "easy":
-            time = 90;
+            time = 60;
             break;
 
         case "medium":
-            time = 60;
-            break;
+            time = 45;
+            break; 
 
         default:
             time = 30;
@@ -63,19 +62,17 @@ function GetRandomSong() {
 }
 
 function Timer() {
-    let intervalId; // pour pouvoir stopper le timer
-    // stopper un ancien timer si il existe
+    let intervalId;
     if (intervalId) clearInterval(intervalId);
 
-    // afficher immédiatement le temps au départ
     document.getElementById("ClockInfo").textContent = `Time remaining: ${time} seconds`;
 
     intervalId = setInterval(() => {
-        time--; // décrémente le compteur
+        time--;
 
         if (time <= 0) {
-            clearInterval(intervalId); // stop le timer
-            time = 0; // reset le temps
+            clearInterval(intervalId);
+            time = 0; 
             document.getElementById("ClockInfo").textContent = `Time remaining: ${time} seconds`;
             alert("Time's up !");
         } else {
