@@ -1,17 +1,18 @@
 let songs = [];
 let time;
+let timerDuration; // durée fixe pour l’animation
 let intervalId;
 
 const vBtnTac = document.getElementById("tac");
 vBtnTac.addEventListener("click", GetRandomSong);
 
 const vBtnTimer = document.getElementById("timer");
-vBtnTimer.addEventListener("click", () => {
-  // ⚡ Lancer le Timer normal
-  Timer();
+// bouton désactivé par défaut
+vBtnTimer.disabled = true; 
 
-  // ⚡ Activer le cooldown visuel avec durée = time (sec → ms)
-  startCooldown(vBtnTimer, time * 1000);
+vBtnTimer.addEventListener("click", () => {
+  Timer();
+  startCooldown(vBtnTimer, timerDuration * 1000);
 });
 
 // Charger le JSON
@@ -40,10 +41,12 @@ function GetRandomSong() {
   const difficulty = document.getElementById("difficulté").value;
 
   switch (difficulty.toLowerCase()) {
-    case "easy": time = 30; break;
-    case "medium": time = 45; break;
-    default: time = 60; break;
+    case "easy": timerDuration = 30; break;
+    case "medium": timerDuration = 45; break;
+    default: timerDuration = 60; break;
   }
+
+  time = timerDuration; // compteur de décrément
 
   document.getElementById("ClockInfo").textContent = `The clock is set for ${time} seconds`;
 
@@ -61,6 +64,9 @@ function GetRandomSong() {
 
   document.getElementById("resultat").textContent =
     `${song.Titre} - ${song.Artiste}, (${song.Difficulté})`;
+
+  // Activer le bouton "Set Timer"
+  vBtnTimer.disabled = false;
 }
 
 // ⏱️ Timer
@@ -85,10 +91,9 @@ function Timer() {
 
 // 🔒 Gestion du cooldown
 function startCooldown(button, duration) {
-  // Adapter aussi l'animation CSS dynamiquement
   button.style.setProperty("--cooldown-duration", `${duration}ms`);
-
   button.disabled = true;
+
   setTimeout(() => {
     button.disabled = false;
   }, duration);
