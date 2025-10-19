@@ -60,7 +60,6 @@
   --white-900: #fffefe;
 }
 
-/* Palette (variables CSS) */
 :root {
   --oxford_blue: #0a1128;
   --penn_blue: #001f54;
@@ -97,7 +96,7 @@ h1 {
 /* 📱 Container central */
 .container {
   width: 100%;
-  max-width: 480px; /* largeur max pour garder lisible sur grands écrans */
+  max-width: 480px;
   background: var(--white);
   padding: 20px;
   border-radius: 16px;
@@ -130,8 +129,6 @@ select:focus {
   border-color: var(--indigo_dye);
 }
 
-/* 🎯 Boutons */
-
 /* 🎯 Bouton avec cooldown */
 button.cooldown {
   width: 100%;
@@ -160,7 +157,7 @@ button.cooldown:focus:not(:disabled) {
 
 /* Désactivé pendant le cooldown */
 button.cooldown:disabled {
-  background: #0b4e60; /* un peu plus foncé que cerulean */
+  background: var(--cerulean-300);
   color: #e0e0e0;
   cursor: default;
   box-shadow: inset 3px 3px 10px 0px rgba(0,0,0,0.2);
@@ -174,7 +171,7 @@ button.cooldown:disabled::after {
   width: 100%;
   left: 0;
   height: 5px;
-  background: #073440;
+  background: var(--cerulean-200);
   animation: cooldown var(--cooldown-duration, 15000ms) linear;
 }
 
@@ -182,4 +179,23 @@ button.cooldown:disabled::after {
 @keyframes cooldown {
    0% { width: 100%; }
    100% { width: 0; }
+}
+
+/* 📝 Résultats */
+#resultat, #ClockInfo {
+  margin-top: 16px;
+  font-size: clamp(1.2rem, 4vw, 1.6rem);
+  font-weight: 600;
+  text-align: center;
+  color: var(--penn_blue);
+}
+
+/* 📲 Responsive tweaks */
+@media (min-width: 600px) {
+  body {
+    padding: 40px;
+  }
+  .container {
+    padding: 30px;
+  }
 }
