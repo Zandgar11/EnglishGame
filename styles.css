@@ -131,42 +131,55 @@ select:focus {
 }
 
 /* 🎯 Boutons */
-button {
+
+/* 🎯 Bouton avec cooldown */
+button.cooldown {
   width: 100%;
   margin-top: 12px;
   padding: 14px;
   font-size: 1rem;
+  font-weight: 600;
   border-radius: 12px;
   border: none;
   cursor: pointer;
-  font-weight: 600;
-  background: var(--cerulean);
   color: var(--white);
+  background: var(--cerulean);
   box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  position: relative;
+  overflow: hidden;
   transition: 0.25s ease;
+  min-height: 48px;
+  min-width: 144px;
 }
 
-button:hover,
-button:focus {
+button.cooldown:hover:not(:disabled),
+button.cooldown:focus:not(:disabled) {
   background: var(--indigo_dye);
   transform: translateY(-2px);
 }
 
-/* 📝 Résultats */
-#resultat, #ClockInfo {
-  margin-top: 16px;
-  font-size: clamp(1.2rem, 4vw, 1.6rem);
-  font-weight: 600;
-  text-align: center;
-  color: var(--penn_blue);
+/* Désactivé pendant le cooldown */
+button.cooldown:disabled {
+  background: #0b4e60; /* un peu plus foncé que cerulean */
+  color: #e0e0e0;
+  cursor: default;
+  box-shadow: inset 3px 3px 10px 0px rgba(0,0,0,0.2);
 }
 
-/* 📲 Responsive tweaks (tablette & +) */
-@media (min-width: 600px) {
-  body {
-    padding: 40px;
-  }
-  .container {
-    padding: 30px;
-  }
+/* Barre de progression en bas pendant le cooldown */
+button.cooldown:disabled::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  left: 0;
+  height: 5px;
+  background: #073440; /* encore plus foncé */
+  animation: cooldown 15s linear;
+}
+
+/* Animation cooldown */
+@keyframes cooldown {
+   0% { width: 100%; }
+   100% { width: 0; }
 }
