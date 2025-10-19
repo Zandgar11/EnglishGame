@@ -10,8 +10,8 @@ vBtnTimer.addEventListener("click", () => {
   // ⚡ Lancer le Timer normal
   Timer();
 
-  // ⚡ Activer le cooldown visuel
-  startCooldown(vBtnTimer, 15000); // 15s
+  // ⚡ Activer le cooldown visuel avec durée = time (sec → ms)
+  startCooldown(vBtnTimer, time * 1000);
 });
 
 // Charger le JSON
@@ -85,9 +85,10 @@ function Timer() {
 
 // 🔒 Gestion du cooldown
 function startCooldown(button, duration) {
-  button.disabled = true;
+  // Adapter aussi l'animation CSS dynamiquement
+  button.style.setProperty("--cooldown-duration", `${duration}ms`);
 
-  // Quand la durée est écoulée → réactiver
+  button.disabled = true;
   setTimeout(() => {
     button.disabled = false;
   }, duration);
