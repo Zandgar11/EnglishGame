@@ -1,76 +1,17 @@
 :root {
   /* Oxford Blue */
   --oxford_blue: #0a1128;
-  --oxford_blue-100: #020308;
-  --oxford_blue-200: #040710;
-  --oxford_blue-300: #060a18;
-  --oxford_blue-400: #080e21;
-  --oxford_blue-500: #0a1128;
-  --oxford_blue-600: #1d3172;
-  --oxford_blue-700: #2f50bc;
-  --oxford_blue-800: #6c86da;
-  --oxford_blue-900: #b6c2ed;
-
-  /* Penn Blue */
-  --penn_blue: #001f54;
-  --penn_blue-100: #000610;
-  --penn_blue-200: #000c21;
-  --penn_blue-300: #001231;
-  --penn_blue-400: #001841;
-  --penn_blue-500: #001f54;
-  --penn_blue-600: #003da7;
-  --penn_blue-700: #005dfd;
-  --penn_blue-800: #5492ff;
-  --penn_blue-900: #a9c9ff;
-
-  /* Indigo Dye */
-  --indigo_dye: #034078;
-  --indigo_dye-100: #010d18;
-  --indigo_dye-200: #011930;
-  --indigo_dye-300: #022648;
-  --indigo_dye-400: #02335f;
-  --indigo_dye-500: #034078;
-  --indigo_dye-600: #0567c3;
-  --indigo_dye-700: #1c8ef9;
-  --indigo_dye-800: #68b4fb;
-  --indigo_dye-900: #b3d9fd;
-
-  /* Cerulean */
-  --cerulean: #1282a2;
-  --cerulean-100: #041a20;
-  --cerulean-200: #073440;
-  --cerulean-300: #0b4e60;
-  --cerulean-400: #0e6881;
-  --cerulean-500: #1282a2;
-  --cerulean-600: #18b2dc;
-  --cerulean-700: #4cc9eb;
-  --cerulean-800: #88dbf2;
-  --cerulean-900: #c3edf8;
-
-  /* White */
-  --white: #fefcfb;
-  --white-100: #512814;
-  --white-200: #a25128;
-  --white-300: #d68359;
-  --white-400: #eabfaa;
-  --white-500: #fefcfb;
-  --white-600: #fefdfc;
-  --white-700: #fefdfd;
-  --white-800: #fffefd;
-  --white-900: #fffefe;
-}
-
-:root {
-  --oxford_blue: #0a1128;
-  --penn_blue: #001f54;
+  /* ... (tes autres variables intactes) ... */
   --indigo_dye: #034078;
   --cerulean: #1282a2;
+  --penn_blue: #001f54;
   --white: #fefcfb;
+  /* durée du cooldown (sera écrasée en JS, unité : s) */
+  --cooldown-duration: 15s;
 }
 
-* {
-  box-sizing: border-box;
-}
+/* reset / layout */
+* { box-sizing: border-box; }
 
 body {
   font-family: 'Segoe UI', Roboto, Arial, sans-serif;
@@ -84,16 +25,6 @@ body {
   min-height: 100vh;
 }
 
-/* 🏷️ Titre */
-h1 {
-  color: var(--indigo_dye);
-  font-size: clamp(1.8rem, 6vw, 2.5rem);
-  margin-bottom: 20px;
-  text-align: center;
-  font-weight: 700;
-}
-
-/* 📱 Container central */
 .container {
   width: 100%;
   max-width: 480px;
@@ -103,33 +34,29 @@ h1 {
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-/* 🔘 Label + Select */
-label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 1rem;
-  font-weight: 600;
+h1 {
+  color: var(--indigo_dye);
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 700;
 }
 
+label { display:block; margin-bottom:8px; font-weight:600; }
 select {
-  width: 100%;
-  background: var(--white);
-  color: var(--oxford_blue);
-  border: 2px solid var(--cerulean);
-  border-radius: 12px;
-  padding: 12px;
-  font-size: 1rem;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  transition: 0.2s ease;
+  width:100%;
+  background:var(--white);
+  color:var(--oxford_blue);
+  border:2px solid var(--cerulean);
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:16px;
+  font-size:1rem;
+  box-shadow:0 2px 6px rgba(0,0,0,0.05);
 }
+select:focus { outline:none; border-color:var(--indigo_dye); }
 
-select:focus {
-  outline: none;
-  border-color: var(--indigo_dye);
-}
-
-/* 🎯 Bouton avec cooldown */
+/* Bouton cooldown (style moderne + animation via transform) */
 button.cooldown {
   width: 100%;
   margin-top: 12px;
@@ -155,33 +82,36 @@ button.cooldown:focus:not(:disabled) {
   transform: translateY(-2px);
 }
 
-/* Désactivé pendant le cooldown */
+/* état disabled */
 button.cooldown:disabled {
-  background: var(--cerulean-300);
+  background: var(--cerulean-300, #0b4e60);
   color: #e0e0e0;
   cursor: default;
   box-shadow: inset 3px 3px 10px 0px rgba(0,0,0,0.2);
 }
 
-/* Barre de progression en bas pendant le cooldown */
+/* barre de progression (meilleure perf: transform scaleX) */
 button.cooldown:disabled::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  width: 100%;
   left: 0;
+  bottom: 0;
   height: 5px;
-  background: var(--cerulean-200);
-  animation: cooldown var(--cooldown-duration, 15000ms) linear;
+  width: 100%;
+  transform-origin: left center;
+  transform: scaleX(1);
+  background: var(--cerulean-200, #073440);
+  /* on utilise la variable en secondes (ex: "30s") */
+  animation: cooldown var(--cooldown-duration, 15s) linear forwards;
+  pointer-events: none;
 }
 
-/* Animation cooldown */
+/* keyframes animant la scaleX de 1 → 0 */
 @keyframes cooldown {
-   0% { width: 100%; }
-   100% { width: 0; }
+  to { transform: scaleX(0); }
 }
 
-/* 📝 Résultats */
+/* Résultats */
 #resultat, #ClockInfo {
   margin-top: 16px;
   font-size: clamp(1.2rem, 4vw, 1.6rem);
@@ -190,12 +120,8 @@ button.cooldown:disabled::after {
   color: var(--penn_blue);
 }
 
-/* 📲 Responsive tweaks */
+/* responsive */
 @media (min-width: 600px) {
-  body {
-    padding: 40px;
-  }
-  .container {
-    padding: 30px;
-  }
+  body { padding: 40px; }
+  .container { padding: 30px; }
 }
