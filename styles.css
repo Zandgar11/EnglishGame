@@ -174,8 +174,8 @@ button.cooldown:disabled::after {
   width: 100%;
   left: 0;
   height: 5px;
-  background: #073440; /* encore plus foncé */
-  animation: cooldown 15s linear;
+  background: #073440;
+  animation: cooldown var(--cooldown-duration, 15000ms) linear;
 }
 
 /* Animation cooldown */
