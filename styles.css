@@ -106,3 +106,43 @@ button:disabled {
   font-weight: 700;
   margin: 0;
 }
+
+/* Popup "Bonne réponse ?" */
+.popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.popup-inner {
+  background: white;
+  color: #023e8a;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  width: 80%;
+  max-width: 300px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.popup-inner h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.popup-inner button {
+  margin: 6px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+}
+
+#yesBtn { background: #2a9d8f; }
+#noBtn { background: #e63946; }

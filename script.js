@@ -2,6 +2,7 @@ let songs = [];
 let timerDuration = 30;
 let timeLeft = 0;
 let interval = null;
+let isPaused = false;
 
 const takeCardBtn = document.getElementById("takeCard");
 const hideCardBtn = document.getElementById("hideCard");
@@ -13,23 +14,23 @@ const timer2 = document.getElementById("timer2");
 const team1 = document.getElementById("team1");
 const team2 = document.getElementById("team2");
 
-// --- CHARGEMENT JSON ROBUSTE ---
+// Conteneur du popup "Oui / Non"
+let popup = null;
+
+// --- CHARGEMENT JSON ---
 fetch("convertcsv.json")
   .then(r => r.json())
   .then(data => {
     if (!data || !data.length) throw new Error("Fichier vide");
-    
-    // 1️⃣ si chaque ligne est un tableau : [Titre, Année, Artiste, Difficulté]
+
     if (Array.isArray(data[0])) {
       const keys = ["Titre", "Année", "Artiste", "Difficulté"];
       songs = data.map(row => {
         const obj = {};
-        keys.forEach((k, i) => obj[k] = row[i]);
+        keys.forEach((k, i) => (obj[k] = row[i]));
         return obj;
       });
-    }
-    // 2️⃣ si c’est déjà un tableau d’objets
-    else if (typeof data[0] === "object") {
+    } else if (typeof data[0] === "object") {
       songs = data;
     } else {
       throw new Error("Format JSON inconnu");
@@ -38,7 +39,7 @@ fetch("convertcsv.json")
     console.log(`✅ ${songs.length} chansons chargées`);
   })
   .catch(err => {
-    console.error("Erreur de chargement JSON :", err);
+    console.error("Erreur chargement JSON :", err);
     alert("Erreur : impossible de charger les chansons !");
   });
 
@@ -51,14 +52,19 @@ takeCardBtn.addEventListener("click", () => {
 
   const diff = difficultySelect.value.toLowerCase();
   switch (diff) {
-    case "easy": timerDuration = 30; break;
-    case "medium": timerDuration = 45; break;
-    case "hard": timerDuration = 60; break;
+    case "easy":
+      timerDuration = 30;
+      break;
+    case "medium":
+      timerDuration = 45;
+      break;
+    case "hard":
+      timerDuration = 60;
+      break;
   }
 
-  // Filtrage
   const filtered = songs.filter(
-    s => (s.Difficulté || "").trim().toLowerCase() === diff
+    (s) => (s.Difficulté || "").trim().toLowerCase() === diff
   );
 
   if (!filtered.length) {
@@ -66,7 +72,6 @@ takeCardBtn.addEventListener("click", () => {
     return;
   }
 
-  // Choix aléatoire
   const song = filtered[Math.floor(Math.random() * filtered.length)];
   cardText.textContent = `${song.Titre} — ${song.Artiste} (${song.Difficulté})`;
 
@@ -79,16 +84,23 @@ hideCardBtn.addEventListener("click", () => {
   hideCardBtn.style.display = "none";
 });
 
+// --- TIMER ---
 startTimerBtn.addEventListener("click", () => {
   startTimerBtn.disabled = true;
   cardText.style.filter = "blur(0)";
+  startTimer();
+});
+
+function startTimer() {
   timeLeft = timerDuration;
   updateTimers();
 
   if (interval) clearInterval(interval);
   interval = setInterval(() => {
-    timeLeft--;
-    updateTimers();
+    if (!isPaused) {
+      timeLeft--;
+      updateTimers();
+    }
 
     if (timeLeft <= 0) {
       clearInterval(interval);
@@ -97,18 +109,64 @@ startTimerBtn.addEventListener("click", () => {
       startTimerBtn.disabled = false;
     }
   }, 1000);
-});
+}
 
 function updateTimers() {
   timer1.textContent = timeLeft.toString().padStart(2, "0");
   timer2.textContent = timeLeft.toString().padStart(2, "0");
 }
 
-// --- BUZZERS ---
+// --- BUZZER ---
 function buzz(team) {
+  if (isPaused || timeLeft <= 0) return; // déjà en pause ou timer fini
+
   team.classList.add("buzzed");
-  setTimeout(() => team.classList.remove("buzzed"), 600);
+  setTimeout(() => team.classList.remove("buzzed"), 300);
+
+  // Pause timer
+  isPaused = true;
+
+  // Affiche la fenêtre "Bonne réponse ?"
+  showPopup(team);
 }
 
 team1.addEventListener("click", () => buzz(team1));
 team2.addEventListener("click", () => buzz(team2));
+
+// --- POPUP ---
+function showPopup(team) {
+  if (popup) popup.remove();
+
+  popup = document.createElement("div");
+  popup.className = "popup";
+  popup.innerHTML = `
+    <div class="popup-inner">
+      <h3>${team.classList.contains("team1") ? "Équipe 1" : "Équipe 2"} a buzzé !</h3>
+      <button id="yesBtn">✅ Bonne réponse</button>
+      <button id="noBtn">❌ Mauvaise réponse</button>
+    </div>
+  `;
+  document.body.appendChild(popup);
+
+  document.getElementById("yesBtn").addEventListener("click", () => {
+    endRound(team);
+  });
+  document.getElementById("noBtn").addEventListener("click", () => {
+    resumeTimer();
+  });
+}
+
+function endRound(team) {
+  popup.remove();
+  popup = null;
+  isPaused = false;
+  clearInterval(interval);
+  alert(`${team.classList.contains("team1") ? "Équipe 1" : "Équipe 2"} gagne ce tour !`);
+  startTimerBtn.disabled = false;
+}
+
+function resumeTimer() {
+  popup.remove();
+  popup = null;
+  isPaused = false;
+}
