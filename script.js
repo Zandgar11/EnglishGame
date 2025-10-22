@@ -16,6 +16,7 @@ const team1 = document.getElementById("team1");
 const team2 = document.getElementById("team2");
 
 let popup = null;
+let endOverlay = null;
 
 // --- CHARGEMENT JSON ---
 fetch("convertcsv.json")
@@ -40,27 +41,21 @@ fetch("convertcsv.json")
   })
   .catch(err => {
     console.error("Erreur chargement JSON :", err);
-    alert("Erreur : impossible de charger les chansons !");
+    showNotice("⚠️ Erreur : impossible de charger les chansons !");
   });
 
 // --- PRENDRE UNE CARTE ---
 takeCardBtn.addEventListener("click", () => {
   if (!songs.length) {
-    alert("Les chansons ne sont pas encore chargées !");
+    showNotice("⏳ Les chansons ne sont pas encore chargées !");
     return;
   }
 
   const diff = difficultySelect.value.toLowerCase();
   switch (diff) {
-    case "easy":
-      timerDuration = 30;
-      break;
-    case "medium":
-      timerDuration = 45;
-      break;
-    case "hard":
-      timerDuration = 60;
-      break;
+    case "easy": timerDuration = 30; break;
+    case "medium": timerDuration = 45; break;
+    case "hard": timerDuration = 60; break;
   }
 
   const filtered = songs.filter(
@@ -68,7 +63,7 @@ takeCardBtn.addEventListener("click", () => {
   );
 
   if (!filtered.length) {
-    alert("Aucune chanson trouvée pour cette difficulté !");
+    showNotice("😕 Aucune chanson trouvée pour cette difficulté !");
     return;
   }
 
@@ -105,7 +100,7 @@ function startTimer() {
     if (timeLeft <= 0) {
       clearInterval(interval);
       interval = null;
-      alert("⏰ Temps écoulé !");
+      showNotice("⏰ Temps écoulé !");
       startTimerBtn.disabled = false;
     }
   }, 1000);
@@ -121,7 +116,7 @@ function buzz(team) {
   if (isPaused || timeLeft <= 0) return;
 
   team.classList.add("buzzed");
-  setTimeout(() => team.classList.remove("buzzed"), 300);
+  setTimeout(() => team.classList.remove("buzzed"), 400);
 
   isPaused = true;
   showPopup(team);
@@ -161,10 +156,12 @@ function endRound(team) {
   clearInterval(interval);
 
   if (currentSong) {
-    const info = `${currentSong.Titre} — ${currentSong.Artiste} (${currentSong.Année})`;
-    alert(`${team.classList.contains("team1") ? "Team 1" : "Team 2"} guessed correctly!\n\n🎵 ${info}`);
+    showEndOverlay(
+      team.classList.contains("team1") ? "Team 1" : "Team 2",
+      currentSong
+    );
   } else {
-    alert(`${team.classList.contains("team1") ? "Team 1" : "Team 2"} guessed correctly!`);
+    showEndOverlay(team.classList.contains("team1") ? "Team 1" : "Team 2", null);
   }
 
   startTimerBtn.disabled = false;
@@ -174,4 +171,43 @@ function resumeTimer() {
   if (popup) popup.remove();
   popup = null;
   isPaused = false;
+}
+
+// --- SUPER POPUP DE FIN ---
+function showEndOverlay(teamName, song) {
+  if (endOverlay) endOverlay.remove();
+
+  endOverlay = document.createElement("div");
+  endOverlay.className = "end-overlay";
+  endOverlay.innerHTML = `
+    <div class="end-inner">
+      <h2>🏆 ${teamName} guessed correctly!</h2>
+      ${
+        song
+          ? `<p class="song-info"><strong>${song.Titre}</strong><br>${song.Artiste} (${song.Année})</p>`
+          : ""
+      }
+      <button id="closeEndBtn">Next round</button>
+    </div>
+  `;
+  document.body.appendChild(endOverlay);
+
+  const closeBtn = document.getElementById("closeEndBtn");
+  closeBtn.addEventListener("click", () => {
+    endOverlay.classList.add("fade-out");
+    setTimeout(() => endOverlay.remove(), 400);
+  });
+}
+
+// --- PETITE NOTICE TEMPORAIRE (style toast) ---
+function showNotice(text) {
+  const div = document.createElement("div");
+  div.className = "notice";
+  div.textContent = text;
+  document.body.appendChild(div);
+  setTimeout(() => div.classList.add("visible"), 10);
+  setTimeout(() => {
+    div.classList.remove("visible");
+    setTimeout(() => div.remove(), 400);
+  }, 2500);
 }
