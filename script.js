@@ -4,6 +4,7 @@ let timerDuration = 30;
 let timeLeft = 0;
 let interval = null;
 let isPaused = false;
+let scores = { team1: 0, team2: 0 };
 
 const takeCardBtn = document.getElementById("takeCard");
 const hideCardBtn = document.getElementById("hideCard");
@@ -18,58 +19,26 @@ const team2 = document.getElementById("team2");
 let popup = null;
 let endOverlay = null;
 
-// --- CHARGEMENT JSON ---
 fetch("convertcsv.json")
   .then(r => r.json())
   .then(data => {
-    if (!data || !data.length) throw new Error("Fichier vide");
-
+    if (!data?.length) throw new Error("vide");
     if (Array.isArray(data[0])) {
       const keys = ["Titre", "Année", "Artiste", "Difficulté"];
-      songs = data.map(row => {
-        const obj = {};
-        keys.forEach((k, i) => (obj[k] = row[i]));
-        return obj;
-      });
-    } else if (typeof data[0] === "object") {
-      songs = data;
-    } else {
-      throw new Error("Format JSON inconnu");
-    }
-
-    console.log(`✅ ${songs.length} chansons chargées`);
+      songs = data.map(r => Object.fromEntries(keys.map((k, i) => [k, r[i]])));
+    } else songs = data;
+    console.log(`✅ ${songs.length} chansons`);
   })
-  .catch(err => {
-    console.error("Erreur chargement JSON :", err);
-    showNotice("⚠️ Erreur : impossible de charger les chansons !");
-  });
+  .catch(() => showNotice("⚠️ Erreur chargement chansons"));
 
-// --- PRENDRE UNE CARTE ---
 takeCardBtn.addEventListener("click", () => {
-  if (!songs.length) {
-    showNotice("⏳ Les chansons ne sont pas encore chargées !");
-    return;
-  }
-
+  if (!songs.length) return showNotice("⏳ Chargement...");
   const diff = difficultySelect.value.toLowerCase();
-  switch (diff) {
-    case "easy": timerDuration = 30; break;
-    case "medium": timerDuration = 45; break;
-    case "hard": timerDuration = 60; break;
-  }
-
-  const filtered = songs.filter(
-    s => (s.Difficulté || "").trim().toLowerCase() === diff
-  );
-
-  if (!filtered.length) {
-    showNotice("😕 Aucune chanson trouvée pour cette difficulté !");
-    return;
-  }
-
+  timerDuration = diff === "hard" ? 60 : diff === "medium" ? 45 : 30;
+  const filtered = songs.filter(s => (s.Difficulté || "").trim().toLowerCase() === diff);
+  if (!filtered.length) return showNotice("😕 Aucune chanson !");
   currentSong = filtered[Math.floor(Math.random() * filtered.length)];
-  cardText.textContent = `${currentSong.Titre} — ${currentSong.Artiste} (${currentSong.Difficulté})`;
-
+  cardText.textContent = `${currentSong.Titre} — ${currentSong.Artiste}`;
   cardText.style.filter = "blur(0)";
   hideCardBtn.style.display = "block";
   startTimerBtn.disabled = false;
@@ -80,7 +49,6 @@ hideCardBtn.addEventListener("click", () => {
   hideCardBtn.style.display = "none";
 });
 
-// --- TIMER ---
 startTimerBtn.addEventListener("click", () => {
   startTimerBtn.disabled = true;
   startTimer();
@@ -89,14 +57,10 @@ startTimerBtn.addEventListener("click", () => {
 function startTimer() {
   timeLeft = timerDuration;
   updateTimers();
-
   if (interval) clearInterval(interval);
   interval = setInterval(() => {
-    if (!isPaused) {
-      timeLeft--;
-      updateTimers();
-    }
-
+    if (!isPaused) timeLeft--;
+    updateTimers();
     if (timeLeft <= 0) {
       clearInterval(interval);
       interval = null;
@@ -111,13 +75,10 @@ function updateTimers() {
   timer2.textContent = timeLeft.toString().padStart(2, "0");
 }
 
-// --- BUZZER ---
 function buzz(team) {
   if (isPaused || timeLeft <= 0) return;
-
   team.classList.add("buzzed");
   setTimeout(() => team.classList.remove("buzzed"), 400);
-
   isPaused = true;
   showPopup(team);
 }
@@ -125,15 +86,13 @@ function buzz(team) {
 team1.addEventListener("click", () => buzz(team1));
 team2.addEventListener("click", () => buzz(team2));
 
-// --- POPUP ---
 function showPopup(team) {
   if (popup) popup.remove();
-
   popup = document.createElement("div");
   popup.className = "popup";
   popup.innerHTML = `
     <div class="popup-inner">
-      <h3>${team.classList.contains("team1") ? "Team 1" : "Team 2"} hit the buzzer!</h3>
+      <h3>${team.classList.contains("team1") ? "Team 1" : "Team 2"} buzzed!</h3>
       <button id="yesBtn">✅ Good guess!</button>
       <button id="noBtn">❌ Bad guess!</button>
     </div>
@@ -141,65 +100,58 @@ function showPopup(team) {
   document.body.appendChild(popup);
 
   document.getElementById("yesBtn").addEventListener("click", () => {
-    endRound(team);
+    endRound(team, true);
   });
   document.getElementById("noBtn").addEventListener("click", () => {
-    resumeTimer();
+    endRound(team, false);
   });
 }
 
-// --- FIN DU TOUR ---
-function endRound(team) {
+function endRound(team, correct) {
   if (popup) popup.remove();
   popup = null;
   isPaused = false;
   clearInterval(interval);
 
-  if (currentSong) {
-    showEndOverlay(
-      team.classList.contains("team1") ? "Team 1" : "Team 2",
-      currentSong
-    );
-  } else {
-    showEndOverlay(team.classList.contains("team1") ? "Team 1" : "Team 2", null);
-  }
+  const teamName = team.classList.contains("team1") ? "Team 1" : "Team 2";
+  const opponent = team.classList.contains("team1") ? "team2" : "team1";
+
+  if (correct) scores[team.classList.contains("team1") ? "team1" : "team2"]++;
+  else scores[opponent]++;
+
+  showEndOverlay(
+    correct ? `${teamName} guessed correctly!` : `${teamName} was wrong...`,
+    currentSong,
+    scores
+  );
 
   startTimerBtn.disabled = false;
 }
 
-function resumeTimer() {
-  if (popup) popup.remove();
-  popup = null;
-  isPaused = false;
-}
-
-// --- SUPER POPUP DE FIN ---
-function showEndOverlay(teamName, song) {
+function showEndOverlay(message, song, scores) {
   if (endOverlay) endOverlay.remove();
-
   endOverlay = document.createElement("div");
   endOverlay.className = "end-overlay";
   endOverlay.innerHTML = `
     <div class="end-inner">
-      <h2>🏆 ${teamName} guessed correctly!</h2>
+      <h2>${message}</h2>
       ${
         song
           ? `<p class="song-info"><strong>${song.Titre}</strong><br>${song.Artiste} (${song.Année})</p>`
           : ""
       }
+      <p class="score">🏅 Team 1: ${scores.team1} | 🏅 Team 2: ${scores.team2}</p>
       <button id="closeEndBtn">Next round</button>
     </div>
   `;
   document.body.appendChild(endOverlay);
 
-  const closeBtn = document.getElementById("closeEndBtn");
-  closeBtn.addEventListener("click", () => {
+  document.getElementById("closeEndBtn").addEventListener("click", () => {
     endOverlay.classList.add("fade-out");
     setTimeout(() => endOverlay.remove(), 400);
   });
 }
 
-// --- PETITE NOTICE TEMPORAIRE (style toast) ---
 function showNotice(text) {
   const div = document.createElement("div");
   div.className = "notice";
