@@ -1,4 +1,5 @@
 let songs = [];
+let currentSong = null;
 let timerDuration = 30;
 let timeLeft = 0;
 let interval = null;
@@ -14,7 +15,6 @@ const timer2 = document.getElementById("timer2");
 const team1 = document.getElementById("team1");
 const team2 = document.getElementById("team2");
 
-// Conteneur du popup "Oui / Non"
 let popup = null;
 
 // --- CHARGEMENT JSON ---
@@ -64,7 +64,7 @@ takeCardBtn.addEventListener("click", () => {
   }
 
   const filtered = songs.filter(
-    (s) => (s.Difficulté || "").trim().toLowerCase() === diff
+    s => (s.Difficulté || "").trim().toLowerCase() === diff
   );
 
   if (!filtered.length) {
@@ -72,9 +72,10 @@ takeCardBtn.addEventListener("click", () => {
     return;
   }
 
-  const song = filtered[Math.floor(Math.random() * filtered.length)];
-  cardText.textContent = `${song.Titre} — ${song.Artiste} (${song.Difficulté})`;
+  currentSong = filtered[Math.floor(Math.random() * filtered.length)];
+  cardText.textContent = `${currentSong.Titre} — ${currentSong.Artiste} (${currentSong.Difficulté})`;
 
+  cardText.style.filter = "blur(0)";
   hideCardBtn.style.display = "block";
   startTimerBtn.disabled = false;
 });
@@ -87,7 +88,6 @@ hideCardBtn.addEventListener("click", () => {
 // --- TIMER ---
 startTimerBtn.addEventListener("click", () => {
   startTimerBtn.disabled = true;
-  cardText.style.filter = "blur(0)";
   startTimer();
 });
 
@@ -118,15 +118,12 @@ function updateTimers() {
 
 // --- BUZZER ---
 function buzz(team) {
-  if (isPaused || timeLeft <= 0) return; // déjà en pause ou timer fini
+  if (isPaused || timeLeft <= 0) return;
 
   team.classList.add("buzzed");
   setTimeout(() => team.classList.remove("buzzed"), 300);
 
-  // Pause timer
   isPaused = true;
-
-  // Affiche la fenêtre "Bonne réponse ?"
   showPopup(team);
 }
 
@@ -141,9 +138,9 @@ function showPopup(team) {
   popup.className = "popup";
   popup.innerHTML = `
     <div class="popup-inner">
-      <h3>${team.classList.contains("team1") ? "Team 1" : "Team 2"} a hit the buzzer !</h3>
-      <button id="yesBtn">✅ Good guess !</button>
-      <button id="noBtn">❌ Bad guess !</button>
+      <h3>${team.classList.contains("team1") ? "Team 1" : "Team 2"} hit the buzzer!</h3>
+      <button id="yesBtn">✅ Good guess!</button>
+      <button id="noBtn">❌ Bad guess!</button>
     </div>
   `;
   document.body.appendChild(popup);
@@ -156,17 +153,25 @@ function showPopup(team) {
   });
 }
 
+// --- FIN DU TOUR ---
 function endRound(team) {
-  popup.remove();
+  if (popup) popup.remove();
   popup = null;
   isPaused = false;
   clearInterval(interval);
-  alert(`${team.classList.contains("team1") ? "Team 1" : "Team 2"} won this game !`);
+
+  if (currentSong) {
+    const info = `${currentSong.Titre} — ${currentSong.Artiste} (${currentSong.Année})`;
+    alert(`${team.classList.contains("team1") ? "Team 1" : "Team 2"} guessed correctly!\n\n🎵 ${info}`);
+  } else {
+    alert(`${team.classList.contains("team1") ? "Team 1" : "Team 2"} guessed correctly!`);
+  }
+
   startTimerBtn.disabled = false;
 }
 
 function resumeTimer() {
-  popup.remove();
+  if (popup) popup.remove();
   popup = null;
   isPaused = false;
 }
