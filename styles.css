@@ -177,3 +177,87 @@ button:disabled {
     font-size: 0.95rem;
   }
 }
+
+/* POPUP fin de manche stylée */
+.end-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.end-overlay.fade-out {
+  animation: fadeOut 0.4s ease forwards;
+}
+
+.end-inner {
+  background: var(--white);
+  color: var(--blue1);
+  padding: 30px 20px;
+  border-radius: 16px;
+  text-align: center;
+  width: 80%;
+  max-width: 340px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  animation: popUp 0.4s ease;
+}
+
+.end-inner h2 {
+  margin-top: 0;
+  color: var(--blue2);
+  font-size: 1.6rem;
+}
+
+.song-info {
+  margin: 12px 0 20px;
+  font-size: 1.1rem;
+}
+
+#closeEndBtn {
+  background: var(--blue3);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+#closeEndBtn:hover {
+  background: var(--blue2);
+}
+
+/* Animations */
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+@keyframes fadeOut { from {opacity:1;} to {opacity:0;} }
+@keyframes popUp {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* TOAST NOTICES */
+.notice {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translate(-50%, 100%);
+  background: var(--blue2);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  opacity: 0;
+  transition: 0.4s ease;
+  z-index: 2000;
+  font-weight: 600;
+}
+
+.notice.visible {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
