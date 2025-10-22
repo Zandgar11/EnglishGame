@@ -2,26 +2,43 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Songtionnary</title>
+  <title>Songtionnary Duel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Songtionnary</h1>
 
-    <label for="difficulté">Choose a difficulty :</label>
-    <select id="difficulté">
-      <option value="Easy">Easy</option>
-      <option value="Medium">Medium</option>
-      <option value="Hard">Hard</option>
-    </select>
+  <div id="game-area">
+    <!-- Équipe 1 -->
+    <div class="team team1" id="team1">
+      <div class="overlay">
+        <h2>Équipe 1</h2>
+        <p id="timer1">00</p>
+      </div>
+    </div>
 
-    <button id="tac">Take a card</button>
+    <!-- Zone centrale : carte + boutons -->
+    <div class="card-zone" id="cardZone">
+      <h1>Songtionnary</h1>
+      <label for="difficulty">Choisis la difficulté :</label>
+      <select id="difficulty">
+        <option value="Easy">Easy</option>
+        <option value="Medium">Medium</option>
+        <option value="Hard">Hard</option>
+      </select>
+      <button id="takeCard">Prendre une carte</button>
+      <p id="cardText"></p>
+      <button id="hideCard" style="display:none;">Cacher la carte</button>
+      <button id="startTimer" disabled>Démarrer le timer</button>
+    </div>
 
-    <p id="resultat"></p>
-    <p id="ClockInfo"></p>
-
-    <button class="cooldown" id="timer">Set the clock on</button>
+    <!-- Équipe 2 -->
+    <div class="team team2" id="team2">
+      <div class="overlay">
+        <h2>Équipe 2</h2>
+        <p id="timer2">00</p>
+      </div>
+    </div>
   </div>
 
   <script src="script.js"></script>
