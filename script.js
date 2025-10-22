@@ -10,23 +10,39 @@ const cardText = document.getElementById("cardText");
 const difficultySelect = document.getElementById("difficulty");
 const timer1 = document.getElementById("timer1");
 const timer2 = document.getElementById("timer2");
-
 const team1 = document.getElementById("team1");
 const team2 = document.getElementById("team2");
 
-// Charger les chansons
+// --- CHARGEMENT JSON ROBUSTE ---
 fetch("convertcsv.json")
   .then(r => r.json())
   .then(data => {
-    const keys = ["Titre", "Année", "Artiste", "Difficulté"];
-    songs = data.map(row => {
-      let o = {};
-      keys.forEach((k, i) => o[k] = row[i]);
-      return o;
-    });
-  })
-  .catch(err => console.error("Erreur chargement JSON :", err));
+    if (!data || !data.length) throw new Error("Fichier vide");
+    
+    // 1️⃣ si chaque ligne est un tableau : [Titre, Année, Artiste, Difficulté]
+    if (Array.isArray(data[0])) {
+      const keys = ["Titre", "Année", "Artiste", "Difficulté"];
+      songs = data.map(row => {
+        const obj = {};
+        keys.forEach((k, i) => obj[k] = row[i]);
+        return obj;
+      });
+    }
+    // 2️⃣ si c’est déjà un tableau d’objets
+    else if (typeof data[0] === "object") {
+      songs = data;
+    } else {
+      throw new Error("Format JSON inconnu");
+    }
 
+    console.log(`✅ ${songs.length} chansons chargées`);
+  })
+  .catch(err => {
+    console.error("Erreur de chargement JSON :", err);
+    alert("Erreur : impossible de charger les chansons !");
+  });
+
+// --- PRENDRE UNE CARTE ---
 takeCardBtn.addEventListener("click", () => {
   if (!songs.length) {
     alert("Les chansons ne sont pas encore chargées !");
@@ -40,11 +56,20 @@ takeCardBtn.addEventListener("click", () => {
     case "hard": timerDuration = 60; break;
   }
 
-  const filtered = songs.filter(s => (s.Difficulté || "").toLowerCase() === diff);
-  if (!filtered.length) return alert("Aucune chanson pour cette difficulté !");
-  const song = filtered[Math.floor(Math.random() * filtered.length)];
+  // Filtrage
+  const filtered = songs.filter(
+    s => (s.Difficulté || "").trim().toLowerCase() === diff
+  );
 
+  if (!filtered.length) {
+    alert("Aucune chanson trouvée pour cette difficulté !");
+    return;
+  }
+
+  // Choix aléatoire
+  const song = filtered[Math.floor(Math.random() * filtered.length)];
   cardText.textContent = `${song.Titre} — ${song.Artiste} (${song.Difficulté})`;
+
   hideCardBtn.style.display = "block";
   startTimerBtn.disabled = false;
 });
@@ -79,7 +104,7 @@ function updateTimers() {
   timer2.textContent = timeLeft.toString().padStart(2, "0");
 }
 
-// Effet "buzzer" tactile pour les zones d’équipe
+// --- BUZZERS ---
 function buzz(team) {
   team.classList.add("buzzed");
   setTimeout(() => team.classList.remove("buzzed"), 600);
