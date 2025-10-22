@@ -47,15 +47,9 @@ takeCardBtn.addEventListener("click", () => {
   }
   const diff = difficultySelect.value.toLowerCase();
   switch (diff) {
-    case "easy":
-      timerDuration = 60;
-      break;
-    case "medium":
-      timerDuration = 75;
-      break;
-    case "hard":
-      timerDuration = 90;
-      break;
+    case "easy": timerDuration = 60; break;
+    case "medium": timerDuration = 75; break;
+    case "hard": timerDuration = 90; break;
   }
   const filtered = songs.filter(s => (s.Difficulté || "").trim().toLowerCase() === diff);
   if (!filtered.length) {
@@ -92,6 +86,7 @@ function startTimer() {
       clearInterval(interval);
       interval = null;
       showNotice("⏰ Temps écoulé !");
+      showSongPopup(); // ✅ popup chanson ici
       startTimerBtn.disabled = false;
     }
   }, 1000);
@@ -165,6 +160,28 @@ function showEndOverlay(teamName, song) {
   closeBtn.addEventListener("click", () => {
     endOverlay.classList.add("fade-out");
     setTimeout(() => endOverlay.remove(), 400);
+  });
+}
+
+// ✅ Nouvelle fonction : popup de fin de timer avec la chanson
+function showSongPopup() {
+  if (popup) popup.remove();
+  popup = document.createElement("div");
+  popup.className = "popup";
+  popup.innerHTML = `
+    <div class="popup-inner song-popup">
+      <h2>⏰ Temps écoulé !</h2>
+      ${currentSong ? `
+        <p><strong>${currentSong.Titre}</strong><br>
+        ${currentSong.Artiste} (${currentSong.Année})</p>
+      ` : `<p>(Aucune chanson active)</p>`}
+      <button id="closeSongPopup">Fermer</button>
+    </div>
+  `;
+  document.body.appendChild(popup);
+  document.getElementById("closeSongPopup").addEventListener("click", () => {
+    popup.classList.add("fade-out");
+    setTimeout(() => popup.remove(), 400);
   });
 }
 
