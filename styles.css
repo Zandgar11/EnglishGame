@@ -5,6 +5,7 @@
   --white: #fefefe;
 }
 
+/* Général */
 html, body {
   margin: 0;
   padding: 0;
@@ -12,14 +13,19 @@ html, body {
   font-family: "Segoe UI", Arial, sans-serif;
   background: var(--white);
   overflow: hidden;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
+/* Conteneur principal */
 #game-area {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
+/* Équipes */
 .team {
   flex: 1;
   display: flex;
@@ -29,7 +35,9 @@ html, body {
   text-align: center;
   position: relative;
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: 0.2s ease;
+  font-size: clamp(1.2rem, 4vw, 2rem);
+  padding: 10px;
 }
 
 .team1 { background: var(--blue1); }
@@ -37,7 +45,7 @@ html, body {
 
 .team.buzzed {
   background: var(--blue3);
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 
 .team .overlay {
@@ -46,6 +54,7 @@ html, body {
   transform: translateY(-50%);
 }
 
+/* Zone centrale (cartes, menu, etc.) */
 .card-zone {
   position: absolute;
   top: 50%;
@@ -54,9 +63,9 @@ html, body {
   background: var(--white);
   color: var(--blue1);
   text-align: center;
-  width: 90%;
-  max-width: 420px;
-  padding: 20px;
+  width: 92%;
+  max-width: 400px;
+  padding: 18px;
   border-radius: 16px;
   box-shadow: 0 6px 18px rgba(0,0,0,0.15);
   z-index: 5;
@@ -65,16 +74,19 @@ html, body {
 .card-zone h1 {
   margin-top: 0;
   color: var(--blue2);
+  font-size: clamp(1.2rem, 5vw, 1.8rem);
 }
 
 select, button {
   width: 100%;
   margin: 8px 0;
-  padding: 12px;
+  padding: 14px;
   border-radius: 12px;
   border: 2px solid var(--blue2);
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 1.1rem;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button {
@@ -82,11 +94,13 @@ button {
   color: white;
   border: none;
   cursor: pointer;
-  transition: 0.3s;
+  transition: 0.2s;
 }
 
-button:hover:not(:disabled) {
+button:hover:not(:disabled),
+button:active:not(:disabled) {
   background: var(--blue2);
+  transform: scale(0.98);
 }
 
 button:disabled {
@@ -99,12 +113,15 @@ button:disabled {
   font-size: 1.2rem;
   font-weight: 600;
   transition: filter 0.3s ease;
+  word-wrap: break-word;
 }
 
+/* Timer */
 #timer1, #timer2 {
-  font-size: 2.5rem;
+  font-size: clamp(1.8rem, 6vw, 2.6rem);
   font-weight: 700;
   margin: 0;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
 /* Popup "Bonne réponse ?" */
@@ -116,33 +133,47 @@ button:disabled {
   justify-content: center;
   align-items: center;
   z-index: 999;
+  backdrop-filter: blur(2px);
 }
 
 .popup-inner {
   background: white;
   color: #023e8a;
-  padding: 20px;
+  padding: 24px 20px;
   border-radius: 12px;
   text-align: center;
   width: 80%;
-  max-width: 300px;
+  max-width: 320px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
 .popup-inner h3 {
   margin-top: 0;
   margin-bottom: 15px;
+  font-size: clamp(1.2rem, 5vw, 1.6rem);
 }
 
 .popup-inner button {
   margin: 6px;
-  padding: 10px 14px;
+  padding: 14px 18px;
   border: none;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
   color: white;
+  font-size: 1.1rem;
+  min-width: 100px;
 }
 
 #yesBtn { background: #2a9d8f; }
 #noBtn { background: #e63946; }
+
+@media (max-height: 600px) {
+  .card-zone {
+    padding: 12px;
+  }
+  select, button {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+}
