@@ -141,9 +141,9 @@ function showPopup(team) {
   popup.className = "popup";
   popup.innerHTML = `
     <div class="popup-inner">
-      <h3>${team.classList.contains("team1") ? "Équipe 1" : "Équipe 2"} a buzzé !</h3>
-      <button id="yesBtn">✅ Bonne réponse</button>
-      <button id="noBtn">❌ Mauvaise réponse</button>
+      <h3>${team.classList.contains("team1") ? "Team 1" : "Team 2"} a hit the buzzer !</h3>
+      <button id="yesBtn">✅ Good guess !</button>
+      <button id="noBtn">❌ Bad guess !</button>
     </div>
   `;
   document.body.appendChild(popup);
@@ -161,7 +161,7 @@ function endRound(team) {
   popup = null;
   isPaused = false;
   clearInterval(interval);
-  alert(`${team.classList.contains("team1") ? "Équipe 1" : "Équipe 2"} gagne ce tour !`);
+  alert(`${team.classList.contains("team1") ? "Team 1" : "Team 2"} won this game !`);
   startTimerBtn.disabled = false;
 }
 
