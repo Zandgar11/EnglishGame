@@ -48,13 +48,13 @@ takeCardBtn.addEventListener("click", () => {
   const diff = difficultySelect.value.toLowerCase();
   switch (diff) {
     case "easy":
-      timerDuration = 30;
+      timerDuration = 60;
       break;
     case "medium":
-      timerDuration = 45;
+      timerDuration = 75;
       break;
     case "hard":
-      timerDuration = 60;
+      timerDuration = 90;
       break;
   }
   const filtered = songs.filter(s => (s.Difficulté || "").trim().toLowerCase() === diff);
