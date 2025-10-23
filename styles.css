@@ -252,3 +252,15 @@ button:disabled {
   transform: translate(-50%, 0);
   opacity: 1;
 }
+
+#Reglement {
+  background: var(--blue1);
+  color: white;
+  border: none;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+#Reglement:hover {
+  background: var(--blue2);
+}

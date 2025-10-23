@@ -1,4 +1,8 @@
 [
+
+  // Basé sur la difficulté à deviner le titre en dessinant
+
+
   ["Titre","Année","Artiste","Difficulté"  ],
   ["Stand by Me","1961","Ben E. King","medium"  ],
   ["I Want to Hold Your Hand","1963","The Beatles","hard"  ],

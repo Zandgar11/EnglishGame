@@ -196,3 +196,40 @@ function showNotice(text) {
     setTimeout(() => div.remove(), 400);
   }, 2500);
 }
+
+// === Popup Règlement ===
+const reglementBtn = document.getElementById("Reglement");
+
+const reglementText = `
+<h2>📜 Règlement du Songtionnary Duel</h2>
+<ol style="text-align:left; padding-left:20px;">
+  <li>Une équipe pioche une chanson selon la difficulté choisie.</li>
+  <li>Le joueur doit faire deviner le titre en le dessinant, sans écrire ni parler.</li>
+  <li>Si l’équipe adverse devine avant la fin du temps, elle peut buzzer.</li>
+  <li>Une bonne réponse = 1 point. Une mauvaise = point à l’autre équipe.</li>
+  <li>Fin de manche → nouvelle chanson.</li>
+</ol>
+<p style="font-weight:600; color:#0077b6;">Amusez-vous et soyez fair-play 🎶</p>
+`;
+
+reglementBtn.addEventListener("click", () => {
+  showReglementPopup();
+});
+
+function showReglementPopup() {
+  if (popup) popup.remove();
+  popup = document.createElement("div");
+  popup.className = "popup";
+  popup.innerHTML = `
+    <div class="popup-inner">
+      ${reglementText}
+      <button id="closeReglement">Fermer</button>
+    </div>
+  `;
+  document.body.appendChild(popup);
+
+  document.getElementById("closeReglement").addEventListener("click", () => {
+    popup.classList.add("fade-out");
+    setTimeout(() => popup.remove(), 400);
+  });
+}
