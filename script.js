@@ -17,6 +17,7 @@ const team2 = document.getElementById("team2");
 let popup = null;
 let endOverlay = null;
 
+// === Chargement du JSON ===
 fetch("convertcsv.json")
   .then(r => r.json())
   .then(data => {
@@ -40,6 +41,7 @@ fetch("convertcsv.json")
     showNotice("⚠️ Erreur : impossible de charger les chansons !");
   });
 
+// === Gestion des cartes ===
 takeCardBtn.addEventListener("click", () => {
   if (!songs.length) {
     showNotice("⏳ Les chansons ne sont pas encore chargées !");
@@ -73,6 +75,7 @@ startTimerBtn.addEventListener("click", () => {
   startTimer();
 });
 
+// === Timer ===
 function startTimer() {
   timeLeft = timerDuration;
   updateTimers();
@@ -86,7 +89,7 @@ function startTimer() {
       clearInterval(interval);
       interval = null;
       showNotice("⏰ Temps écoulé !");
-      showSongPopup(); // ✅ popup chanson ici
+      showSongPopup(); // popup de fin
       startTimerBtn.disabled = false;
     }
   }, 1000);
@@ -97,6 +100,7 @@ function updateTimers() {
   timer2.textContent = timeLeft.toString().padStart(2, "0");
 }
 
+// === Buzzer ===
 function buzz(team) {
   if (isPaused || timeLeft <= 0) return;
   team.classList.add("buzzed");
@@ -115,8 +119,8 @@ function showPopup(team) {
   popup.innerHTML = `
     <div class="popup-inner">
       <h3>${team === team1 ? "Team 1" : "Team 2"} buzzed!</h3>
-      <button id="yesBtn">✅ Bonne réponse</button>
-      <button id="noBtn">❌ Mauvaise réponse</button>
+      <button id="yesBtn">✅ Correct answer</button>
+      <button id="noBtn">❌ Wrong answer</button>
     </div>
   `;
   document.body.appendChild(popup);
@@ -131,16 +135,13 @@ function showPopup(team) {
   });
 }
 
+// === Fin de manche ===
 function endRound(team) {
   if (popup) popup.remove();
   popup = null;
   isPaused = false;
   clearInterval(interval);
-  if (currentSong) {
-    showEndOverlay(team === team1 ? "Team 1" : "Team 2", currentSong);
-  } else {
-    showEndOverlay(team === team1 ? "Team 1" : "Team 2", null);
-  }
+  showEndOverlay(team === team1 ? "Team 1" : "Team 2", currentSong);
   startTimerBtn.disabled = false;
 }
 
@@ -150,32 +151,31 @@ function showEndOverlay(teamName, song) {
   endOverlay.className = "end-overlay";
   endOverlay.innerHTML = `
     <div class="end-inner">
-      <h2>🏆 ${teamName} gagne la manche !</h2>
+      <h2>🏆 ${teamName} wins the round!</h2>
       ${song ? `<p class="song-info"><strong>${song.Titre}</strong><br>${song.Artiste} (${song.Année})</p>` : ""}
-      <button id="closeEndBtn">Manche suivante</button>
+      <button id="closeEndBtn">Next round</button>
     </div>
   `;
   document.body.appendChild(endOverlay);
-  const closeBtn = document.getElementById("closeEndBtn");
-  closeBtn.addEventListener("click", () => {
+  document.getElementById("closeEndBtn").addEventListener("click", () => {
     endOverlay.classList.add("fade-out");
     setTimeout(() => endOverlay.remove(), 400);
   });
 }
 
-// ✅ Nouvelle fonction : popup de fin de timer avec la chanson
+// === Popup de fin de timer ===
 function showSongPopup() {
   if (popup) popup.remove();
   popup = document.createElement("div");
   popup.className = "popup";
   popup.innerHTML = `
     <div class="popup-inner song-popup">
-      <h2>⏰ Temps écoulé !</h2>
+      <h2>⏰ Time’s up!</h2>
       ${currentSong ? `
         <p><strong>${currentSong.Titre}</strong><br>
         ${currentSong.Artiste} (${currentSong.Année})</p>
-      ` : `<p>(Aucune chanson active)</p>`}
-      <button id="closeSongPopup">Fermer</button>
+      ` : `<p>(No song active)</p>`}
+      <button id="closeSongPopup">Close</button>
     </div>
   `;
   document.body.appendChild(popup);
@@ -185,6 +185,7 @@ function showSongPopup() {
   });
 }
 
+// === Notifications ===
 function showNotice(text) {
   const div = document.createElement("div");
   div.className = "notice";
@@ -197,9 +198,7 @@ function showNotice(text) {
   }, 2500);
 }
 
-// === Popup Règlement ===
-const reglementBtn = document.getElementById("Reglement");
-
+// === Texte du règlement ===
 const reglementText = `
 <h2>📜 Songtionnary Duel Rules</h2>
 <ol style="text-align:left; padding-left:20px;">
@@ -212,10 +211,18 @@ const reglementText = `
 <p style="font-weight:600; color:#0077b6;">Have fun and play fair 🎶</p>
 `;
 
-reglementBtn.addEventListener("click", () => {
+// === Petit bouton flottant ===
+const tinyBtn = document.createElement("button");
+tinyBtn.id = "tinyRuleBtn";
+tinyBtn.title = "Show rules";
+tinyBtn.textContent = "📜";
+document.body.appendChild(tinyBtn);
+
+tinyBtn.addEventListener("click", () => {
   showReglementPopup();
 });
 
+// === Affichage du règlement ===
 function showReglementPopup() {
   if (popup) popup.remove();
   popup = document.createElement("div");
@@ -223,11 +230,10 @@ function showReglementPopup() {
   popup.innerHTML = `
     <div class="popup-inner">
       ${reglementText}
-      <button id="closeReglement">Fermer</button>
+      <button id="closeReglement">Close</button>
     </div>
   `;
   document.body.appendChild(popup);
-
   document.getElementById("closeReglement").addEventListener("click", () => {
     popup.classList.add("fade-out");
     setTimeout(() => popup.remove(), 400);
