@@ -201,15 +201,15 @@ function showNotice(text) {
 const reglementBtn = document.getElementById("Reglement");
 
 const reglementText = `
-<h2>📜 Règlement du Songtionnary Duel</h2>
+<h2>📜 Songtionnary Duel Rules</h2>
 <ol style="text-align:left; padding-left:20px;">
-  <li>Une équipe pioche une chanson selon la difficulté choisie.</li>
-  <li>Le joueur doit faire deviner le titre en le dessinant, sans écrire ni parler.</li>
-  <li>Si l’équipe adverse devine avant la fin du temps, elle peut buzzer.</li>
-  <li>Une bonne réponse = 1 point. Une mauvaise = point à l’autre équipe.</li>
-  <li>Fin de manche → nouvelle chanson.</li>
+  <li>A team draws a song based on the chosen difficulty.</li>
+  <li>The player must make their team guess the song title by drawing — no words, no letters, no talking.</li>
+  <li>If the opposing team guesses before time runs out, they can buzz.</li>
+  <li>A correct answer = 1 point. A wrong answer = 1 point for the other team.</li>
+  <li>When the round ends → draw a new song.</li>
 </ol>
-<p style="font-weight:600; color:#0077b6;">Amusez-vous et soyez fair-play 🎶</p>
+<p style="font-weight:600; color:#0077b6;">Have fun and play fair 🎶</p>
 `;
 
 reglementBtn.addEventListener("click", () => {
