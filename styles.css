@@ -3,6 +3,7 @@
   --blue2: #0077b6;
   --blue3: #00b4d8;
   --white: #fefefe;
+  --shadow: rgba(0, 0, 0, 0.2);
 }
 
 html, body {
@@ -21,8 +22,10 @@ html, body {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  position: relative;
 }
 
+/* ÉQUIPES ---------------------------------------------------- */
 .team {
   flex: 1;
   display: flex;
@@ -35,6 +38,7 @@ html, body {
   transition: 0.2s ease;
   font-size: clamp(1.2rem, 4vw, 2rem);
   padding: 10px;
+  overflow: visible;
 }
 
 .team1 { background: var(--blue1); }
@@ -49,8 +53,11 @@ html, body {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+  z-index: 50; /* au-dessus du bloc central */
+  pointer-events: none;
 }
 
+/* BLOC CENTRAL ------------------------------------------------ */
 .card-zone {
   position: absolute;
   top: 50%;
@@ -63,8 +70,8 @@ html, body {
   max-width: 400px;
   padding: 18px;
   border-radius: 16px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-  z-index: 5;
+  box-shadow: 0 6px 18px var(--shadow);
+  z-index: 10;
 }
 
 .card-zone h1 {
@@ -73,6 +80,7 @@ html, body {
   font-size: clamp(1.2rem, 5vw, 1.8rem);
 }
 
+/* BOUTONS + SELECT ------------------------------------------- */
 select, button {
   width: 100%;
   margin: 8px 0;
@@ -112,13 +120,15 @@ button:disabled {
   word-wrap: break-word;
 }
 
+/* TIMERS ------------------------------------------------------ */
 #timer1, #timer2 {
   font-size: clamp(1.8rem, 6vw, 2.6rem);
   font-weight: 700;
   margin: 0;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  text-shadow: 0 2px 6px rgba(0,0,0,0.25);
 }
 
+/* POPUP ------------------------------------------------------- */
 .popup {
   position: fixed;
   inset: 0;
@@ -127,7 +137,7 @@ button:disabled {
   justify-content: center;
   align-items: center;
   z-index: 999;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(3px);
 }
 
 .popup-inner {
@@ -138,7 +148,8 @@ button:disabled {
   text-align: center;
   width: 80%;
   max-width: 320px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 15px var(--shadow);
+  animation: popUp 0.3s ease;
 }
 
 .popup-inner h3 {
@@ -162,16 +173,7 @@ button:disabled {
 #yesBtn { background: #2a9d8f; }
 #noBtn { background: #e63946; }
 
-@media (max-height: 600px) {
-  .card-zone {
-    padding: 12px;
-  }
-  select, button {
-    padding: 10px;
-    font-size: 0.95rem;
-  }
-}
-
+/* FIN DU JEU -------------------------------------------------- */
 .end-overlay {
   position: fixed;
   inset: 0;
@@ -225,6 +227,7 @@ button:disabled {
   background: var(--blue2);
 }
 
+/* ANIMATIONS -------------------------------------------------- */
 @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
 @keyframes fadeOut { from {opacity:1;} to {opacity:0;} }
 @keyframes popUp {
@@ -232,6 +235,7 @@ button:disabled {
   to { transform: scale(1); opacity: 1; }
 }
 
+/* NOTIFICATION ------------------------------------------------ */
 .notice {
   position: fixed;
   bottom: 20px;
@@ -241,7 +245,7 @@ button:disabled {
   color: white;
   padding: 12px 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 10px var(--shadow);
   opacity: 0;
   transition: 0.4s ease;
   z-index: 2000;
@@ -253,6 +257,7 @@ button:disabled {
   opacity: 1;
 }
 
+/* BOUTON RÈGLEMENT -------------------------------------------- */
 #Reglement {
   background: var(--blue1);
   color: white;
@@ -265,6 +270,7 @@ button:disabled {
   background: var(--blue2);
 }
 
+/* PETIT BOUTON ? ---------------------------------------------- */
 #tinyRuleBtn {
   position: fixed;
   top: 10px;
@@ -282,7 +288,71 @@ button:disabled {
   transition: 0.2s ease;
   z-index: 10000;
 }
+
 #tinyRuleBtn:hover {
   background: var(--blue2);
   transform: scale(0.95);
+}
+
+/* SCOREBOARD -------------------------------------------------- */
+#scoreboard {
+  position: fixed;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: clamp(1rem, 3.5vw, 1.2rem);
+  z-index: 2000;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* OPTIMISATION MOBILE ---------------------------------------- */
+@media (max-width: 700px) {
+  body {
+    font-size: 14px;
+    overflow: hidden;
+  }
+
+  .card-zone {
+    width: 90%;
+    padding: 10px;
+    max-width: 340px;
+  }
+
+  select, button {
+    font-size: 1rem;
+    padding: 10px;
+  }
+
+  #cardText {
+    font-size: 1rem;
+  }
+
+  .team h2 {
+    font-size: 1.2rem;
+  }
+
+  #timer1, #timer2 {
+    font-size: 1.8rem;
+  }
+
+  .team .overlay {
+    top: 45%;
+  }
+}
+
+/* PETIT ÉCRAN EN HAUTEUR -------------------------------------- */
+@media (max-height: 600px) {
+  .card-zone {
+    padding: 12px;
+  }
+  select, button {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
 }
