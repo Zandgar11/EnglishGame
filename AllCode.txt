@@ -1,10 +1,10 @@
+script.js ==>
 let songs = [];
 let currentSong = null;
 let timerDuration = 30;
 let timeLeft = 0;
 let interval = null;
 let isPaused = false;
-let score = { team1: 0, team2: 0 };
 
 const takeCardBtn = document.getElementById("takeCard");
 const hideCardBtn = document.getElementById("hideCard");
@@ -18,6 +18,7 @@ const team2 = document.getElementById("team2");
 let popup = null;
 let endOverlay = null;
 
+// === Chargement du JSON ===
 fetch("convertcsv.json")
   .then(r => r.json())
   .then(data => {
@@ -41,6 +42,7 @@ fetch("convertcsv.json")
     showNotice("⚠️ Erreur : impossible de charger les chansons !");
   });
 
+// === Gestion des cartes ===
 takeCardBtn.addEventListener("click", () => {
   if (!songs.length) {
     showNotice("⏳ Les chansons ne sont pas encore chargées !");
@@ -74,6 +76,7 @@ startTimerBtn.addEventListener("click", () => {
   startTimer();
 });
 
+// === Timer ===
 function startTimer() {
   timeLeft = timerDuration;
   updateTimers();
@@ -87,7 +90,7 @@ function startTimer() {
       clearInterval(interval);
       interval = null;
       showNotice("⏰ Temps écoulé !");
-      showSongPopup();
+      showSongPopup(); // popup de fin
       startTimerBtn.disabled = false;
     }
   }, 1000);
@@ -98,6 +101,7 @@ function updateTimers() {
   timer2.textContent = timeLeft.toString().padStart(2, "0");
 }
 
+// === Buzzer ===
 function buzz(team) {
   if (isPaused || timeLeft <= 0) return;
   team.classList.add("buzzed");
@@ -132,16 +136,13 @@ function showPopup(team) {
   });
 }
 
+// === Fin de manche ===
 function endRound(team) {
   if (popup) popup.remove();
   popup = null;
   isPaused = false;
   clearInterval(interval);
-  const teamName = team === team1 ? "Team 1" : "Team 2";
-  if (team === team1) score.team1++;
-  else score.team2++;
-  updateScoreboard();
-  showEndOverlay(teamName, currentSong);
+  showEndOverlay(team === team1 ? "Team 1" : "Team 2", currentSong);
   startTimerBtn.disabled = false;
 }
 
@@ -163,6 +164,7 @@ function showEndOverlay(teamName, song) {
   });
 }
 
+// === Popup de fin de timer ===
 function showSongPopup() {
   if (popup) popup.remove();
   popup = document.createElement("div");
@@ -184,6 +186,7 @@ function showSongPopup() {
   });
 }
 
+// === Notifications ===
 function showNotice(text) {
   const div = document.createElement("div");
   div.className = "notice";
@@ -196,27 +199,7 @@ function showNotice(text) {
   }, 2500);
 }
 
-function updateScoreboard() {
-  let sb = document.getElementById("scoreboard");
-  if (!sb) {
-    sb = document.createElement("div");
-    sb.id = "scoreboard";
-    sb.style.position = "fixed";
-    sb.style.top = "10px";
-    sb.style.left = "50%";
-    sb.style.transform = "translateX(-50%)";
-    sb.style.background = "rgba(0,0,0,0.7)";
-    sb.style.color = "white";
-    sb.style.padding = "8px 14px";
-    sb.style.borderRadius = "10px";
-    sb.style.fontWeight = "600";
-    sb.style.fontSize = "1.1rem";
-    sb.style.zIndex = "9999";
-    document.body.appendChild(sb);
-  }
-  sb.textContent = `Score — Team 1: ${score.team1} | Team 2: ${score.team2}`;
-}
-
+// === Texte du règlement ===
 const reglementText = `
 <h2>📜 Songtionnary Duel Rules</h2>
 <ol style="text-align:left; padding-left:20px;">
@@ -229,15 +212,18 @@ const reglementText = `
 <p style="font-weight:600; color:#0077b6;">Have fun and play fair 🎶</p>
 `;
 
+// === Petit bouton flottant ===
 const tinyBtn = document.createElement("button");
 tinyBtn.id = "tinyRuleBtn";
 tinyBtn.title = "Show rules";
 tinyBtn.textContent = "📜";
 document.body.appendChild(tinyBtn);
+
 tinyBtn.addEventListener("click", () => {
   showReglementPopup();
 });
 
+// === Affichage du règlement ===
 function showReglementPopup() {
   if (popup) popup.remove();
   popup = document.createElement("div");
@@ -255,4 +241,343 @@ function showReglementPopup() {
   });
 }
 
-updateScoreboard();
+
+styles.css ==>
+:root {
+  --blue1: #023e8a;
+  --blue2: #0077b6;
+  --blue3: #00b4d8;
+  --white: #fefefe;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: var(--white);
+  overflow: hidden;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#game-area {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.team {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-size: clamp(1.2rem, 4vw, 2rem);
+  padding: 10px;
+}
+
+.team1 { background: var(--blue1); }
+.team2 { background: var(--blue2); }
+
+.team.buzzed {
+  background: var(--blue3);
+  transform: scale(1.03);
+}
+
+.team .overlay {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.card-zone {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--white);
+  color: var(--blue1);
+  text-align: center;
+  width: 92%;
+  max-width: 400px;
+  padding: 18px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  z-index: 5;
+}
+
+.card-zone h1 {
+  margin-top: 0;
+  color: var(--blue2);
+  font-size: clamp(1.2rem, 5vw, 1.8rem);
+}
+
+select, button {
+  width: 100%;
+  margin: 8px 0;
+  padding: 14px;
+  border-radius: 12px;
+  border: 2px solid var(--blue2);
+  font-weight: 600;
+  font-size: 1.1rem;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  background: var(--blue3);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover:not(:disabled),
+button:active:not(:disabled) {
+  background: var(--blue2);
+  transform: scale(0.98);
+}
+
+button:disabled {
+  background: #ccc;
+  cursor: default;
+}
+
+#cardText {
+  margin-top: 16px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  transition: filter 0.3s ease;
+  word-wrap: break-word;
+}
+
+#timer1, #timer2 {
+  font-size: clamp(1.8rem, 6vw, 2.6rem);
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  backdrop-filter: blur(2px);
+}
+
+.popup-inner {
+  background: white;
+  color: #023e8a;
+  padding: 24px 20px;
+  border-radius: 12px;
+  text-align: center;
+  width: 80%;
+  max-width: 320px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.popup-inner h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: clamp(1.2rem, 5vw, 1.6rem);
+}
+
+.popup-inner button {
+  margin: 6px;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  font-size: 1.1rem;
+  min-width: 100px;
+}
+
+#yesBtn { background: #2a9d8f; }
+#noBtn { background: #e63946; }
+
+@media (max-height: 600px) {
+  .card-zone {
+    padding: 12px;
+  }
+  select, button {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+}
+
+.end-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.end-overlay.fade-out {
+  animation: fadeOut 0.4s ease forwards;
+}
+
+.end-inner {
+  background: var(--white);
+  color: var(--blue1);
+  padding: 30px 20px;
+  border-radius: 16px;
+  text-align: center;
+  width: 80%;
+  max-width: 340px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  animation: popUp 0.4s ease;
+}
+
+.end-inner h2 {
+  margin-top: 0;
+  color: var(--blue2);
+  font-size: 1.6rem;
+}
+
+.song-info {
+  margin: 12px 0 20px;
+  font-size: 1.1rem;
+}
+
+#closeEndBtn {
+  background: var(--blue3);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+#closeEndBtn:hover {
+  background: var(--blue2);
+}
+
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+@keyframes fadeOut { from {opacity:1;} to {opacity:0;} }
+@keyframes popUp {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.notice {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translate(-50%, 100%);
+  background: var(--blue2);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  opacity: 0;
+  transition: 0.4s ease;
+  z-index: 2000;
+  font-weight: 600;
+}
+
+.notice.visible {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+#Reglement {
+  background: var(--blue1);
+  color: white;
+  border: none;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+#Reglement:hover {
+  background: var(--blue2);
+}
+
+#tinyRuleBtn {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: var(--blue1);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  transition: 0.2s ease;
+  z-index: 10000;
+}
+#tinyRuleBtn:hover {
+  background: var(--blue2);
+  transform: scale(0.95);
+}
+
+
+index.html ==>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Songtionnary Duel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div id="game-area">
+    <!-- Équipe 1 -->
+    <div class="team team1" id="team1">
+      <div class="overlay">
+        <h2>Team 1</h2>
+        <p id="timer1">00</p>
+      </div>
+    </div>
+
+    <!-- Zone centrale -->
+    <div class="card-zone" id="cardZone">
+      <h1>Songtionnary</h1>
+      <button id="tinyRuleBtn" title="Show rules">📜</button>
+      <label for="difficulty">Choose the difficulty :</label>
+      <select id="difficulty">
+        <option value="Easy">Easy</option>
+        <option value="Medium">Medium</option>
+        <option value="Hard">Hard</option>
+      </select>
+      <button id="takeCard">Take a card</button>
+      <p id="cardText"></p>
+      <button id="hideCard" style="display:none;">Hide the card</button>
+      <button id="startTimer" disabled>Start the timer</button>
+    </div>
+
+    <!-- Équipe 2 -->
+    <div class="team team2" id="team2">
+      <div class="overlay">
+        <h2>Team 2</h2>
+        <p id="timer2">00</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
